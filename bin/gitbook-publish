@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Create pdf and epub versions in the <PROJECT_DIR>/results folder
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_DIR="$SCRIPT_DIR/.."
+
+gitbook pdf $PROJECT_DIR/book $PROJECT_DIR/results/dfg-text.pdf
+gitbook epub $PROJECT_DIR/book $PROJECT_DIR/results/dfg-text.epub

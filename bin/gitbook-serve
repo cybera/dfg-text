@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Serve the gitbook on http://localhost:4000
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_DIR="$SCRIPT_DIR/.."
+
+gitbook serve $PROJECT_DIR/book

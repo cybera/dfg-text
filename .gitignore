@@ -33,3 +33,6 @@ vignettes/*.pdf
 *.knit.md
 
 .DS_Store
+
+# gitbook serve directory (created and maintained automatically)
+book/_book
