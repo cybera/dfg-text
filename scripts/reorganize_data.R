@@ -1,6 +1,9 @@
 setwd("~/DS/dfg-text/scripts")
 library(plyr)
 
+library(plyr)
+library(dplyr)
+
 charities2017 <- read.csv("../data/raw/CRA-2017-NewOngoingPrograms.csv")
 charities2016 <- read.csv("../data/raw/CRA-2016-NewOngoingPrograms.csv")
 charities2015 <- read.csv("../data/raw/CRA-2015-NewOngoingPrograms.csv")
