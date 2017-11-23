@@ -63,7 +63,7 @@ Topics that stand out are  *willdlife conservation*, *dogs/cats/adoption*, *hist
 
 Top 10 terms:
 
-![lda edmonton charities](plots/lda_edmonton_successful_charities_summary.png)
+![lda edmonton charities](plots/lda_edmonton_successful_charties_summary.png)
 
 Common topics for Calgary and Edmonton successful charities:
 *funds/hospital*, *theatre/music*, *university/science*, *women/violence/aid*, *learning/literacy*, *seniors*, *cancer*, *homes/animal/adoption*,  *church/christian*, *conservation/environmental*.
