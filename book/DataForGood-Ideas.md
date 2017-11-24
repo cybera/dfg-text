@@ -1,3 +1,5 @@
+## Ideas and Background Research
+
 ## Text and Network Analytics
 ####Q4E. Are there trends or similarities in the way charities describe themselves? Do these serve to predict the size of an organization or its likelihood to get funded?
 
@@ -14,7 +16,6 @@ Each Charity is categorized into 5 broad types and multiple sub-types [(link)](h
 * Religion - Churches and other places of worship (Religion)
 * Welfare
 
-
 How can we acquire charities description information (by year)? OwnCloud data or the [CRA website](https://www.canada.ca/en/revenue-agency/services/charities-giving/charities-listings.html).
 * well what does it look like? let's look at the [Calgary Home Builders Foundation](http://www.cra-arc.gc.ca/ebci/haip/srch/t3010form22quickview-eng.action?r=http%3A%2F%2Fwww.cra-arc.gc.ca%3A80%2Febci%2Fhaip%2Fsrch%2Fbasicsearchresult-eng.action%3Fk%3Dcalgary%2Bfoundation%26amp%3Bs%3Dregistered%26amp%3Bp%3D1%26amp%3Bb%3Dtrue&fpe=2016-12-31&b=118823608RR0001&n=CALGARYHOMEBUILDERSFOUNDATION)
   * 2 views: Quick View and Full View
@@ -23,8 +24,8 @@ How can we acquire charities description information (by year)? OwnCloud data or
 
 What types of descriptive trends are we talking about?
 * use the charitable organization, public foundation or private foundation "Programs and Activities Descriptions (ongoing and new programs)"
-* **TASK (Byron C.)**: histogram of these types of charities over time ... e.g. is there a trend towards more public foundations? in calgary, alberta, other provinces, and/or canada?
-* text analytics: **TASK (David A.)** dtm (term frequencies / key words, word cloud), **TASK (Tatiana M.)** topic modelling (LDA)to compare calgary, alberta, other provinces, and/or canada descriptions
+* **TASK**: histogram of these types of charities over time ... e.g. is there a trend towards more public foundations? in calgary, alberta, other provinces, and/or canada?
+* text analytics: **TASK** dtm (term frequencies / key words, word cloud), **TASK** topic modelling (LDA)to compare calgary, alberta, other provinces, and/or canada descriptions
   * trends suggestion: plot the top X topics / frequencies for each geographic region by year and see how they are changing over time
 
 
@@ -49,7 +50,7 @@ Does the size of the organization predict the likelihood of funding via a grant 
 * Other $0 (0%)
 * Total expenses: $812,256
 
-* this information is also available on OwnCloud via the Financial Statements D and Schedule 6. Detailed information about each line of the financial statement can be found [here](https://www.canada.ca/en/revenue-agency/news/cra-multimedia-library/charities-video-gallery/transcript-completing-form-t3010-13-registered-charity-information-return-segment-4-schedule-6-detailed-financial-information-schedule-7-political.html).
+* This information is also available on OwnCloud via the Financial Statements D and Schedule 6. Detailed information about each line of the financial statement can be found [here](https://www.canada.ca/en/revenue-agency/news/cra-multimedia-library/charities-video-gallery/transcript-completing-form-t3010-13-registered-charity-information-return-segment-4-schedule-6-detailed-financial-information-schedule-7-political.html).
   * to get the equivalent information as the list above for Revenue you would use:
     * **Revenue**
     * Receipted donations Line 4500

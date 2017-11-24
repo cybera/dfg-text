@@ -85,7 +85,7 @@ ggplotly(charitycategorycodes.plot)
 
 #Summary of charity types
 
-#target.years <- c("2012","2013","2014","2015")
+target.years <- c("2014","2015")
 
 charitytypes.spread <- 
   all.charities.new %>%
@@ -106,37 +106,66 @@ charitytypes.plot <- ggplot(charitytypes.table,aes(x=year,y=n,fill=Charity.Type)
   xlab("Charity Type") + ylab("Count")
 ggplotly(charitytypes.plot)
 
+##What's with the increase in Private Foundations?
+privatefoundations.table <- all.charities.new %>%
+  select(year, Charity.Type,Designation) %>%
+  filter(year==target.years) %>%
+  filter(Designation=="Private foundations") %>%
+  group_by(year,Charity.Type) %>%
+  tally() %>%
+  spread(Charity.Type,n)
+write.csv(privatefoundations.table,file="../data/processed/privatefoundation20142015-spread.csv",row.names = FALSE)
+
 
 #Summary of Revenue and Expenses by Charity Type
-
-
 charitybudgets.table <-all.charities.new %>% 
   select(year,Total.revenue...4700, Total.expenses...5100, Charity.Type, BN, Legal.Name,City,Province)
 charitybudgets.table$Total.revenue...4700 <- as.numeric(gsub("$", "", charitybudgets.table$Total.revenue...4700,fixed=TRUE))
 charitybudgets.table$Total.expenses...5100 <- as.numeric(gsub("$", "", charitybudgets.table$Total.expenses...5100,fixed=TRUE))
 
 charitybudgets.table.new <- charitybudgets.table %>%
-  mutate(Total.budget=Total.revenue...4700-Total.expenses...5100) %>%
-  filter(!is.na(Total.budget)) 
+  mutate(Net.budget=Total.revenue...4700-Total.expenses...5100) %>%
+  filter(!is.na(Net.budget)) 
 
-totalbudget.ordered <- charitybudgets.table.new %>% 
-  select(Legal.Name,City,Province,year,Total.budget) %>% 
-  arrange(desc(Total.budget)) %>%
-  top_n(20,Total.budget)
-write.csv(totalbudget.ordered,file="../data/processed/charitytotalbudget-top20.csv",row.names = FALSE)
+netbudget.ordered <- charitybudgets.table.new %>% 
+  select(Legal.Name,City,Province,year,Net.budget) %>% 
+  arrange(desc(Net.budget)) %>%
+  top_n(20,Net.budget)
+write.csv(totalbudget.ordered,file="../data/processed/charitynetbudget-top20.csv",row.names = FALSE)
 
 totalrevenue.ordered <- charitybudgets.table.new %>% 
   select(Legal.Name,City,Province,year,Total.revenue...4700) %>% 
   arrange(desc(Total.revenue...4700)) %>%
   filter(Province=="AB") %>%
   top_n(20,Total.revenue...4700)
-write.csv(totalbudget.ordered,file="../data/processed/charitytotalrevenue-ABtop20.csv",row.names = FALSE)
+write.csv(totalrevenue.ordered,file="../data/processed/charitytotalrevenue-ABtop20.csv",row.names = FALSE)
 
 #totalexpenses.ordered <- charitybudgets.table.new %>% 
 #  select(Legal.Name,City,Province,year,Total.expenses...5100) %>% 
 #  arrange(desc(Total.expenses...5100)) %>%
 #  filter(Province=="AB") %>%
 #  top_n(20,Total.expenses...5100)
+
+##scatter plot of charities and budget
+charitynetbudget.scatter <- ggplot(charitybudgets.table.new, aes(x=year,y=Net.budget)) + 
+  geom_point(aes(colour=Charity.Type)) + 
+  xlab("Year") +
+  ylab("Net Budget ($)")
+
+charitynetbudgetAB.scatter <- charitybudgets.table.new %>%
+  filter(Province=="AB") %>%
+  ggplot(aes(x=year,y=Net.budget)) + 
+  geom_point(aes(colour=Charity.Type)) + 
+  xlab("Year") +
+  ylab("Net Budget ($)")
+
+charitynetbudgetAB.scatter <- charitybudgets.table.new %>%
+  filter(Province=="AB") %>%
+  ggplot(aes(x=year,y=Net.budget)) + 
+  geom_boxplot(aes(colour=Charity.Type))
+  
+
+## how many categories/bins?
 
 
 
