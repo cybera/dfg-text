@@ -44,6 +44,7 @@ budget2012[2:3] <- NULL
 colnames(budget2012)[25:47] <- c("Receipted donations - 4500","X4505","Gifts from other charities - 4510","X4520","X4525","X4530","Government funding federal - 4540","Government funding provincial - 4550","Government funding municipal - 4560","X4565","4570","X4571","Other revenue - 4575","Other revenue - 4580","Other revenue - 4590","X4600","X4610","X4620","Other revenue - 4630","X4640","X4650","X4655","Total revenue - 4700")
 colnames(budget2012)[64:72] <- c("Charitable program - 5000","Management and administration - 5010","Fundraising - 5020","Political activities - 5030","Other expenditures - 5040","Gifts to others - 5050","X5060","X5070","Total expenses - 5100")
 
+#For every charity merge all descriptions into one (for np, op, and na program type (new programs, ongoingg programs and na))
 charities2017_new <- merge(charities2017,ddply(charities2017,.(BN),summarise,Desc=paste0(ACTVT.DESC,collapse="; ")),by="BN")
 charities2017_new <- charities2017_new[!duplicated(charities2017_new$BN),]
 charities2017_new$Year <- 2017
@@ -86,31 +87,39 @@ charities2013_new <- merge(charities2013_new,budget2013,by="BN",all.x=TRUE)
 charities2012_new <- merge(charities2012_new,ident2012,by="BN",all.x=TRUE)
 charities2012_new <- merge(charities2012_new,budget2012,by="BN",all.x=TRUE)
 
+#CsV for fiancial information
 charities_all_new_financial <- rbind(charities2017_new,charities2016_new,charities2015_new,charities2014_new,charities2013_new,charities2012_new)
 write.csv(charities_all_new_financial, file = "../data/processed/All_charities_ident_financial.csv")
 
+#merge all descriptions for 6 years, leaving the most recent description for duplicates
 charities_all_new <- charities_all_new[order(charities_all_new[,'BN'],-charities_all_new[,'Year']),]
 charities_all_new <- charities_all_new[!duplicated(charities_all_new$BN),]
 write.csv(charities_all_new, file = "../data/processed/All_charities_summary.csv")
 
+#Calgary grants for 5 years
 calgary_grants <- read.csv("../data/raw/TCF_DataExtract_2012-17.csv")  
 
 calgary_charity_numbers <- as.data.frame(table(calgary_grants$Charity.Number))
+#Summary by charity number
 calgary_charity_numbers <- calgary_charity_numbers[order(-calgary_charity_numbers$Freq), ]
 colnames(calgary_charity_numbers)  <- c("BN","#grants")
+#Match the description
 calgary_charity_numbers$Desc <- charities_all_new$Desc[match(calgary_charity_numbers$BN,charities_all_new$BN)]
 rownames(calgary_charity_numbers) <- NULL
 write.csv(calgary_charity_numbers, file = "../data/processed/Calgary_charities_summary.csv")
 
+#Create another dataset by year
 calgary_grants$Year <- format(as.Date(calgary_grants$Grant.Date),"%Y")
 calgary_grants$Desc <- "NA"
 calgary_grants$Desc <-charities_all_new$Desc[match(calgary_grants$Charity.Number,charities_all_new$BN)]
 calgary_grants <- calgary_grants[,c("Charity.Number","Year","Desc")]
 rownames(calgary_grants) <- NULL
+#order by year/charity number, remove duplicates by year/charity number
 calgary_grants <- calgary_grants[order(calgary_grants[,"Year"],calgary_grants[,"Charity.Number"]),]
 calgary_grants <- calgary_grants[!duplicated(calgary_grants[c(1,2)]),]
 write.csv(calgary_grants, file = "../data/processed/Calgary_charities_by_year.csv")
 
+#helper functions to check date format for Edmonton data
 IsDate_mdY <- function(mydate, date.format = "%m/%d/%Y") {
   tryCatch(!is.na(as.Date(mydate, date.format)),  
            error = function(err) {FALSE})  
@@ -118,43 +127,61 @@ IsDate_mdY <- function(mydate, date.format = "%m/%d/%Y") {
 
 library("readxl")
 library("openxlsx")
+
+#Edmonton grants for the 5 year period
 edmonton_grants <-read_excel("../data/raw/ECF_First_Data_4_Good_Grant_Export_Since_2012.xlsx", 1)
 table(edmonton_grants$`(AppHi)StatusCodeDescr`)
 #Grant Denied/LOI Declined  - not successful(?)
 #Grant Approved - successful
 
+#Summary for charity number
 edmonton_grants_summary <-as.data.frame(table(edmonton_grants$`(Grantee)CharityNo`))
 edmonton_grants_summary <- edmonton_grants_summary[order(-edmonton_grants_summary$Freq), ]
 colnames(edmonton_grants_summary)  <- c("BN","#grants")
+#Match the description
 edmonton_grants_summary$Desc <- charities_all_new$Desc[match(edmonton_grants_summary$BN,charities_all_new$BN)]
 write.csv(edmonton_grants_summary, file = "../data/processed/Edmonton_charities_summary.csv")
 
+#Sorting out successful charities (Grant Approved)
 successful_edmonton_grants <-edmonton_grants[edmonton_grants$`(AppHi)StatusCodeDescr`=="Grant Approved",]
+#Summary for charity number
 successful_edmonton_grants_summary <-as.data.frame(table(successful_edmonton_grants$`(Grantee)CharityNo`))
 colnames(successful_edmonton_grants_summary)  <- c("BN","#grants")
+#Match the description
 successful_edmonton_grants_summary$Desc <- charities_all_new$Desc[match(successful_edmonton_grants_summary$BN,charities_all_new$BN)]
 write.csv(successful_edmonton_grants_summary, file = "../data/processed/Edmonton_successfull_charities_summary.csv")
 
+#Sorting out unsuccessful charities (Grant Denied/LOI Declined)
 denied_edmonton_grants <-edmonton_grants[edmonton_grants$`(AppHi)StatusCodeDescr`%in% c("Grant Denied", "LOI Declined"),]
+#Summary for charity number
 denied_edmonton_grants_summary <-as.data.frame(table(denied_edmonton_grants$`(Grantee)CharityNo`))
 colnames(denied_edmonton_grants_summary)  <- c("BN","#grants")
+#Match the description
 denied_edmonton_grants_summary$Desc <- charities_all_new$Desc[match(denied_edmonton_grants_summary$BN,charities_all_new$BN)]
 write.csv(denied_edmonton_grants_summary, file = "../data/processed/Edmonton_unsuccessfull_charities_summary.csv")
 
+#Creating separate CSV for successful Edmonton charities by year
 successful_edmonton_grants$Year <- "NA"
+#Date was in two different formats in xlsx file, reformatting
 successful_edmonton_grants[IsDate_mdY(successful_edmonton_grants$`(AppHi)GrantDate`),]$Year <- format(as.Date(successful_edmonton_grants[IsDate_mdY(successful_edmonton_grants$`(AppHi)GrantDate`),]$`(AppHi)GrantDate`,format ="%m/%d/%Y"),"%Y")
 successful_edmonton_grants[!IsDate_mdY(successful_edmonton_grants$`(AppHi)GrantDate`),]$Year <- format(convertToDate(successful_edmonton_grants[!IsDate_mdY(successful_edmonton_grants$`(AppHi)GrantDate`),]$`(AppHi)GrantDate`),"%Y")
+#Match the description
 successful_edmonton_grants$Desc <-charities_all_new$Desc[match(successful_edmonton_grants$`(Grantee)CharityNo`,charities_all_new$BN)]
 successful_edmonton_grants <- successful_edmonton_grants[,c("(Grantee)CharityNo","Year","Desc")]
+#Ordering and removing duplicates for every year/charity number
 successful_edmonton_grants <- successful_edmonton_grants[order(successful_edmonton_grants$Year,successful_edmonton_grants$`(Grantee)CharityNo`),]
 successful_edmonton_grants <- successful_edmonton_grants[!duplicated(successful_edmonton_grants[c(1,2)]),]
 write.csv(successful_edmonton_grants, file = "../data/processed/Edmonton_successfull_charities_by_year.csv")
 
+#Creating separate CSV for successful Edmonton charities by year
 denied_edmonton_grants$Year <- "NA"
+#Date was in two different formats in xlsx file, reformatting
 denied_edmonton_grants[IsDate_mdY(denied_edmonton_grants$`(AppHi)GrantDate`),]$Year <- format(as.Date(denied_edmonton_grants[IsDate_mdY(denied_edmonton_grants$`(AppHi)GrantDate`),]$`(AppHi)GrantDate`,format ="%m/%d/%Y"),"%Y")
 denied_edmonton_grants[!IsDate_mdY(denied_edmonton_grants$`(AppHi)GrantDate`),]$Year <- format(convertToDate(denied_edmonton_grants[!IsDate_mdY(denied_edmonton_grants$`(AppHi)GrantDate`),]$`(AppHi)GrantDate`),"%Y")
+#Match the description
 denied_edmonton_grants$Desc <-charities_all_new$Desc[match(denied_edmonton_grants$`(Grantee)CharityNo`,charities_all_new$BN)]
 denied_edmonton_grants <- denied_edmonton_grants[,c("(Grantee)CharityNo","Year","Desc")]
+#Ordering and removing duplicates for every year/charity number
 denied_edmonton_grants <- denied_edmonton_grants[order(denied_edmonton_grants$Year,denied_edmonton_grants$`(Grantee)CharityNo`),]
 denied_edmonton_grants <- denied_edmonton_grants[!duplicated(denied_edmonton_grants[c(1,2)]),]
 write.csv(denied_edmonton_grants, file = "../data/processed/Edmonton_unsuccessfull_charities_by_year.csv")
