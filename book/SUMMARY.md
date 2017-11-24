@@ -1,9 +1,7 @@
 # Summary
 
 * [Introduction](README.md)
-* [Ideas](DataForGood-Ideas.md)
-<<<<<<< Updated upstream
+* [Ideas and Background](DataForGood-Ideas.md)
+* [Charity Types and Size Exploration](Charity_Types_Exploration.md)
 * [Tf-idf Exploration](Tf-idf_Exploration.md)
-=======
-* [Results - Charity Types and Size](Charity_Types_Exploration.md)
->>>>>>> Stashed changes
+* [Topic Modeling Exploration](LDA.md)
